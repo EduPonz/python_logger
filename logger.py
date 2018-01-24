@@ -9,7 +9,7 @@ label or both.
 
 Provides a script to access to the log files created by the Logger class.
 Supports optional levels to filter by level (-l) and by label (-L), as well
-as the follow option (-f) to see live incoming data.
+as the follow options (-f and -F) to see live incoming data.
 
 Created by Eduardo Ponz. 23-01-2018.
 """
@@ -90,7 +90,7 @@ class Logger():
 
     def __clean_old_logs(self):
         """
-        Check the timestamp of the entries using days_to_keep.
+        Check the timestamp and 'd' of the entries and compares them.
 
         If they are to old, it gets rid of them.
         """
@@ -119,8 +119,10 @@ class Logger():
                 file.close()
             else:
                 raise FileNotFoundError
-        except Exception as e:
-            raise e
+        except PermissionError:
+            print("PermissionError: [Errno 13] Permission denied: '" +
+                  self.file_path + "'")
+            sys.exit()
 
     def _get_line_days(self, line):
         """Return the days_to_remain of line."""
