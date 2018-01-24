@@ -1,10 +1,10 @@
 # python_logger
-`logger.py` provides a `Logger` python class to log messages with different debugging level. The logs include a line number, a timestamp (d-m-y H:M:S), a level, and a label. It is possible to set the amount of days that the information should be kept in the file before it is deleted (the default value is 5 days). `logger.py` it is also a ptyhon script to read `Logger` class messages and present them on terminal. It supports filters for levels and labels, as well as the options to see the messages as they arrive.
+`logger.py` provides a `Logger` python class to log messages with different debugging level. The logs include a line number, a timestamp (d-m-y H:M:S), a number or days to be kept, a level, and a label. It is possible to set the amount of days that the message should be kept in the file before it is deleted (the default value is 5 days). `logger.py` it is also a ptyhon script to read `Logger` class messages and present them on terminal. It supports filters for levels and labels, as well as the options to see the messages as they arrive.
 
 ## `Logger` Class
 The `Logger` class provides a `log` method to create file entries and several methods to filter them according to different parameters:
   - **`Constructor`** --> Takes the path to the file where the logs should be stored as a mandatory argument, a label as an optional arguments (default is `logger`), and number of days to keep the logs (default is 5). Logs older than the `days_to_keep` value would be deleted.
-  - **`log`** --> Takes a message and a debugging level as arguments and creates the log in the file.
+  - **`log`** --> Takes a message, a debugging level, and the number of days to keep the log as arguments, and creates the log in the file.
   - **`print_level`** --> Takes a level and prints all the messages that correspond to that level.
   - **`print_label`** --> Takes a label and prints all the messages that correspond to that label.
   - **`print_interval`** --> Takes a list of levels and prints all the messages that correspond to those levels.
@@ -13,7 +13,7 @@ The `Logger` class provides a `log` method to create file entries and several me
   - **`clean_file`** --> Deletes all the messages in the file.
 ### Log example
 ```sh
-1-[23-01-18 15:20:00][lvl:1] logger_example_1: This is a log!
+1-[23-01-18 15:20:00][d:2][l:1] logger_example_1: This is a log!
 ```
 #### `logger_example.py`
 `logger_example.py` is a python script that serves as a example of implementation for the `Logger` class. It creates 2 `Logger` objects with different labels and creates 15 logs for each of them in a file called `log.log` located in the `logger_example.py` directory. Then it implements all the public methods of the `Logger` class to show their functionalities.
