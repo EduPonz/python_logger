@@ -95,24 +95,26 @@ class Logger():
         If they are to old, it gets rid of them.
         """
         try:
-            current_date_string = strftime("%d-%m-%y", gmtime())
-            current_date = datetime.strptime(current_date_string, "%d-%m-%y")
+            current_date_string = strftime("%d-%m-%y %H:%M:%S", gmtime())
+            current_date = datetime.strptime(current_date_string,
+                                             "%d-%m-%y %H:%M:%S")
             lines = self.__get_file_lines()
             if lines != 'no file encoutered':
                 file = open(self.file_path, "w")
                 for line in lines:
-                    days_to_remain = self._get_line_days(line)
+                    seconds = self._get_line_days(line) * 24 * 3600
                     date = ''
                     date_position = False
                     for char in line:
                         if char is '[':
                             date_position = True
-                        elif char is ' ':
+                        elif char is ']':
                             break
                         if date_position is True:
                             date += char
-                    date_format = datetime.strptime(date[1:], "%d-%m-%y")
-                    if (current_date - date_format).days < days_to_remain:
+                    date_format = datetime.strptime(date[1:],
+                                                    "%d-%m-%y %H:%M:%S")
+                    if (current_date - date_format).seconds < seconds:
                         file.write(line)
                 file.close()
             else:
