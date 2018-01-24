@@ -11,14 +11,14 @@ from logger import Logger
 if __name__ == '__main__':
     file_path = os.path.dirname(__file__)
     file_path = os.path.abspath(os.path.join(file_path, "log.log"))
-    logger_1 = Logger(file_path, 'logger_example_1', days_to_keep=8)
-    logger_2 = Logger(file_path, 'logger_example_2', days_to_keep=8)
+    logger_1 = Logger(file_path, 'logger_example_1')
+    logger_2 = Logger(file_path, 'logger_example_2')
 
     # logger_1.clean_file()
 
     for i in range(1, 16):
-        logger_1.log('This is a log!', i)
-        logger_2.log('This is a log!', i)
+        logger_1.log('This is a log!', level=i, days_to_remain=2)
+        logger_2.log('This is a log!', level=i, days_to_remain=5)
 
     print('\n----- PRINT ALL ENTRIES WITH LEVEL 1 -----')
     logger_1.print_level(1)

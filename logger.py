@@ -31,7 +31,7 @@ class Logger():
     Logs can be filtered by level, label or both.
     """
 
-    def __init__(self, file_path, logger_label='logger', days_to_keep=5):
+    def __init__(self, file_path, logger_label='logger'):
         """
         Contructor.
 
@@ -44,7 +44,6 @@ class Logger():
         """
         self.file_path = file_path
         self.logger_label = logger_label
-        self.days_to_keep = days_to_keep
         self.__verify_path()
         self.__clean_old_logs()
 
@@ -102,6 +101,7 @@ class Logger():
             if lines != 'no file encoutered':
                 file = open(self.file_path, "w")
                 for line in lines:
+                    days_to_remain = self._get_line_days(line)
                     date = ''
                     date_position = False
                     for char in line:
@@ -112,13 +112,30 @@ class Logger():
                         if date_position is True:
                             date += char
                     date_format = datetime.strptime(date[1:], "%d-%m-%y")
-                    if (current_date - date_format).days <= self.days_to_keep:
+                    if (current_date - date_format).days < days_to_remain:
                         file.write(line)
                 file.close()
             else:
                 raise FileNotFoundError
         except Exception as e:
             raise e
+
+    def _get_line_days(self, line):
+        """Return the days_to_remain of line."""
+        length = len(line)
+        colon_count = 0
+        days_to_remain = 0
+        for i in range(0, length):
+            if line[i] == ':':
+                colon_count += 1
+            if colon_count is 3:
+                i += 1
+                days_to_remain = int(line[i])
+                while(line[i + 1] is not ']'):
+                    i += 1
+                    days_to_remain = days_to_remain * 10 + int(line[i])
+                break
+        return days_to_remain
 
     def _get_line_level(self, line):
         """Return the log level of line."""
@@ -128,7 +145,7 @@ class Logger():
         for i in range(0, length):
             if line[i] == ':':
                 colon_count += 1
-            if colon_count is 3:
+            if colon_count is 4:
                 i += 1
                 lvl = int(line[i])
                 while(line[i + 1] is not ']'):
@@ -144,7 +161,7 @@ class Logger():
         for char in line:
             if char is ']':
                 bracket_count += 1
-            if bracket_count is 2:
+            if bracket_count is 3:
                 if char is ':':
                     label = label[2:]
                     return label
@@ -152,7 +169,7 @@ class Logger():
                     label += char
         return label
 
-    def log(self, message, level):
+    def log(self, message, level=1, days_to_remain=5):
         """
         Write a log entry specifying the message and the level.
 
@@ -162,9 +179,9 @@ class Logger():
             time_stamp = strftime("%d-%m-%y %H:%M:%S", gmtime())
             line_number = self.__get_last_line_number() + 1
             file = open(self.file_path, "a")
-            file.write(str(line_number) + '-[' + time_stamp + '][lvl:' +
-                       str(level) + '] ' + self.logger_label + ': ' +
-                       message + '\n')
+            file.write(str(line_number) + '-[' + time_stamp + '][d:' +
+                       str(days_to_remain) + '][l:' + str(level) + '] ' +
+                       self.logger_label + ': ' + message + '\n')
             file.close()
         else:
             raise ValueError('Wrong level value. Level must be bigger than 0')
@@ -306,9 +323,9 @@ def print_help():
           'the selected optional filters.')
     print('\t-F --Follow. Prints all the file entries and as they ' +
           'come applying the selected optional filters.')
-    print('\t-l --Levels to output level_1,level_2,etc.')
-    print('\t-L --Filter by log label')
-    print("Example: 'logger $PATH_TO_FILE -l 1,2,3 -L $LOG_LABEL'")
+    print('\t-l --Levels. Levels to output level_1,level_2,etc.')
+    print('\t-L --Label. Filter by log label')
+    print("Example: 'sudo logger $PATH_TO_FILE -l 1,2,3 -L $LOG_LABEL'")
 
 
 def follow_print(file_path, options):
